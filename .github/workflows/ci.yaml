@@ -1,0 +1,57 @@
+name: Lint/Test Splinter
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  lint_gameroom_client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Lint Gameroom Client
+        run: docker-compose -f docker/compose/run-lint.yaml up --abort-on-container-exit lint-gameroom-client
+
+  lint_splinter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Lint Splinter
+        run: docker-compose -f docker/compose/run-lint.yaml up --abort-on-container-exit lint-splinter
+
+  run_clippy_on_splinter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run Clippy on Splinter
+        run: docker-compose -f docker/compose/run-lint.yaml up --abort-on-container-exit clippy-splinter
+
+  unit_test_splinter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Unit Test Splinter
+        run: docker-compose -f tests/test-splinter.yaml up --abort-on-container-exit unit-test-splinter
+
+  gameroom_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Gameroom Tests
+        run: docker-compose -f examples/gameroom/tests/docker-compose.yaml up --abort-on-container-exit
+
+  gameroom_ui_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Gameroom UI Tests
+        run: docker-compose -f examples/gameroom/tests/cypress/docker-compose.yaml up --abort-on-container-exit
+

@@ -1,0 +1,31 @@
+name: Publish Docker Images
+
+on:
+  workflow_run:
+    workflows: ["Lint/Test Splinter"]
+    types:
+      - completed
+
+jobs:
+  publish_docker_images:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Publish branch to dockerhub
+        run: ./ci/publish-docker master
+        env:
+          NAMESPACE: rbuysse/
+          VERSION: AUTO_STRICT

@@ -1,0 +1,19 @@
+name: Release Splinter
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  publish_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # Dockerhub publishing is handled by publish-docker-branch.yaml
+
+      - name: Publish release to crates
+        run: ./ci/publish-crates
